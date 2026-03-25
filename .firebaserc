@@ -1,0 +1,14 @@
+{
+    "projects": {
+        "default": "pretaporter-bd199"
+    },
+    "targets": {
+        "pretaporter-bd199": {
+            "hosting": {
+                "pretaporter-bd199": [
+                    "pretaporter-bd199"
+                ]
+            }
+        }
+    }
+}

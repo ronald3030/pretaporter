@@ -1,0 +1,9 @@
+REPLACE_THIS_FILE_WITH_THE_REAL_DOMAIN_ASSOCIATION_FILE_FROM_PAYPAL
+
+Instructions:
+1. Go to PayPal Developer Dashboard → Apps & Credentials
+2. Select your app → Features → Apple Pay → Manage → Register Domain
+3. Download the domain association file PayPal provides
+4. Replace this file with that download (remove the .txt extension if present)
+5. This file MUST be served at: https://yourdomain.com/.well-known/apple-developer-merchantid-domain-association
+6. Served as Content-Type: application/octet-stream (Next.js does this automatically for unknown types in public/)
