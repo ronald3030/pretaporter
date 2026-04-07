@@ -57,6 +57,7 @@ export function ProductDetail({ producto }: Props) {
       price:     priceStr,
       priceNum:  producto.precio,
       bg:        producto.bg,
+      image:     producto.foto_url ?? undefined,
       size:      selectedTalla,
     })
     setAdded(true)
@@ -97,7 +98,7 @@ export function ProductDetail({ producto }: Props) {
           {producto.foto_url ? (
             <Image
               src={producto.foto_url}
-              alt={producto.nombre}
+              alt={`${producto.nombre} — ropa femenina Prêt à Porter Santo Domingo`}
               fill
               sizes="(max-width: 1024px) 100vw, 50vw"
               className="object-cover"
@@ -231,6 +232,7 @@ export function ProductDetail({ producto }: Props) {
                 price:    priceStr,
                 priceNum: producto.precio,
                 bg:       producto.bg,
+                image:    producto.foto_url ?? undefined,
               })}
               className="flex items-center gap-2 text-xs tracking-[0.1em] uppercase font-sans text-brand-muted hover:text-brand-primary transition-colors"
             >

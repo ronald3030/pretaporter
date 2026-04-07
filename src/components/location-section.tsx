@@ -72,7 +72,7 @@ export function LocationSection() {
                   Santo Domingo, República Dominicana
                 </p>
                 <a
-                  href="https://www.google.com/maps/place/Tienda+Pret+a+Porter/@18.4679497,-69.9311998,20z"
+                  href="https://www.google.com/maps/place/Tienda+Pret+a+Porter/@18.4680564,-69.9313722,17z/data=!4m8!3m7!1s0x8eaf8947d9374991:0xe0f198545cfda88!8m2!3d18.4680522!4d-69.9313699!9m1!1b1!16s%2Fg%2F11ss6jhy7q?entry=ttu&g_ep=EgoyMDI2MDMyNC4wIKXMDSoASAFQAw%3D%3D"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 mt-2 text-xs text-brand-primary hover:underline font-sans"
@@ -91,8 +91,9 @@ export function LocationSection() {
               <div>
                 <p className="font-heading text-xl text-brand-deep mb-1">Horarios</p>
                 <div className="text-brand-muted font-sans space-y-1">
-                  <p>Lunes – Sábado: 9:00am – 8:00pm</p>
-                  <p>Domingos: 10:00am – 5:00pm</p>
+                  <p>Lunes – Viernes: 10:00am – 7:00pm</p>
+                  <p>Sábado: 10:00am – 5:00pm</p>
+                  <p>Domingo: Cerrado</p>
                 </div>
               </div>
             </div>

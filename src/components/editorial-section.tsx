@@ -1,37 +1,40 @@
 'use client'
 
+import Image from 'next/image'
 import { motion, useInView } from 'framer-motion'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import Link from 'next/link'
 
 export function EditorialSection() {
   const ref = useRef(null)
   const isInView = useInView(ref, { once: true, margin: '-80px' })
+  const [imgError, setImgError] = useState(false)
 
   return (
     <section ref={ref} className="py-20 lg:py-0 bg-brand-sand overflow-hidden">
-      <div className="max-w-7xl mx-auto lg:grid lg:grid-cols-2 lg:min-h-[600px]">
+      <div className="max-w-7xl mx-auto lg:grid lg:grid-cols-2 lg:min-h-[640px]">
+
         {/* Image side */}
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           animate={isInView ? { opacity: 1, x: 0 } : {}}
           transition={{ duration: 0.8, ease: 'easeOut' }}
-          className="relative min-h-72 lg:min-h-0"
-          style={{
-            background:
-              'linear-gradient(160deg, #B56F6A 0%, #C9918C 40%, #D8B7AF 80%, #E9DED2 100%)',
-          }}
+          className="relative min-h-[420px] lg:min-h-0 overflow-hidden"
+          style={imgError ? {
+            background: 'linear-gradient(160deg, #B56F6A 0%, #C9918C 40%, #D8B7AF 80%, #E9DED2 100%)',
+          } : undefined}
         >
-          {/* Placeholder label */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <p className="text-brand-ivory/30 text-xs tracking-widest uppercase rotate-90 select-none">
-              Editorial Photo · 900 × 1200px
-            </p>
-          </div>
-          {/* Decorative quote mark */}
-          <div className="absolute top-8 left-8 font-heading text-8xl text-brand-ivory/20 leading-none select-none">
-            "
-          </div>
+          {!imgError && (
+            <Image
+              src="/editorial-pool.jpg"
+              alt="Prêt à Porter — Piezas para cada ocasión"
+              fill
+              className="object-cover object-[center_20%]"
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              priority
+              onError={() => setImgError(true)}
+            />
+          )}
         </motion.div>
 
         {/* Text side */}

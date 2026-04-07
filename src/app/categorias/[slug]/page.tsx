@@ -47,9 +47,43 @@ export async function generateMetadata(
     .single()
 
   const nombre = data?.nombre ?? slug
+  const title = `${nombre} — Ropa Femenina | Prêt à Porter`
+  const description = `Descubre nuestra colección de ${nombre} en Prêt à Porter. Boutique de ropa femenina elegante en Santo Domingo, República Dominicana. Envíos a toda RD y EE.UU.`
+  const url = `https://pret-a-porter-eta.vercel.app/categorias/${slug}`
   return {
-    title:       `${nombre} | Prêt à Porter`,
-    description: `Descubre nuestra colección de ${nombre} en Prêt à Porter.`,
+    title,
+    description,
+    keywords: [
+      `${nombre} mujer Santo Domingo`,
+      `${nombre} República Dominicana`,
+      `comprar ${nombre} RD`,
+      'ropa femenina Santo Domingo',
+      'boutique ropa mujer RD',
+      'Prêt à Porter',
+    ],
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      type: 'website',
+      locale: 'es_DO',
+      siteName: 'Prêt à Porter',
+      images: [
+        {
+          url: '/og-image.jpg',
+          width: 1200,
+          height: 630,
+          alt: `${nombre} — Prêt à Porter Santo Domingo`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: ['/og-image.jpg'],
+    },
   }
 }
 

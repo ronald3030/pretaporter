@@ -7,8 +7,44 @@ import { ProductCard, type ProductCardData } from '@/components/product-card'
 export const revalidate = 60
 
 export const metadata: Metadata = {
-  title: 'Novedades | Prêt à Porter',
-  description: 'Descubre los nuevos ingresos de Prêt à Porter. Piezas frescas y elegantes para la mujer moderna.',
+  title: 'Novedades — Nuevos Ingresos | Prêt à Porter',
+  description:
+    'Descubre los últimos ingresos de Prêt à Porter. Vestidos, blusas y conjuntos recién llegados para la mujer moderna en Santo Domingo. Envíos a toda RD y EE.UU.',
+  keywords: [
+    'novedades ropa femenina Santo Domingo',
+    'nuevos ingresos moda mujer RD',
+    'ropa nueva temporada República Dominicana',
+    'boutique novedades Santo Domingo',
+    'últimas piezas ropa femenina RD',
+    'Prêt à Porter novedades',
+  ],
+  alternates: {
+    canonical: 'https://pret-a-porter-eta.vercel.app/novedades',
+  },
+  openGraph: {
+    title: 'Novedades — Nuevos Ingresos | Prêt à Porter',
+    description:
+      'Vestidos, blusas y conjuntos recién llegados. Boutique femenina en Santo Domingo. Envíos a toda RD y EE.UU.',
+    url: 'https://pret-a-porter-eta.vercel.app/novedades',
+    type: 'website',
+    locale: 'es_DO',
+    siteName: 'Prêt à Porter',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Novedades — Prêt à Porter Santo Domingo',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Novedades — Nuevos Ingresos | Prêt à Porter',
+    description:
+      'Vestidos, blusas y conjuntos recién llegados. Boutique femenina en Santo Domingo.',
+    images: ['/og-image.jpg'],
+  },
 }
 
 function serverClient() {

@@ -51,7 +51,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
           {product.foto_url ? (
             <Image
               src={product.foto_url}
-              alt={product.nombre}
+              alt={`${product.nombre} — Prêt à Porter Santo Domingo`}
               fill
               sizes="(max-width: 768px) 50vw, 25vw"
               className="object-cover scale-100 group-hover:scale-105 transition-transform duration-700 ease-out"
@@ -87,6 +87,7 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
                 price:    priceStr,
                 priceNum: product.precio,
                 bg:       product.bg,
+                image:    product.foto_url ?? undefined,
               })
             }}
             aria-label="Agregar a favoritos"

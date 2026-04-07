@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Heart, Trash2, ShoppingBag } from 'lucide-react'
+import Image from 'next/image'
 import { useWishlist } from '@/context/wishlist-context'
 import { useCart } from '@/context/cart-context'
 
@@ -84,11 +85,21 @@ export function WishlistDrawer() {
                         transition={{ duration: 0.22 }}
                         className="flex items-center gap-4 px-6 py-4 overflow-hidden"
                       >
-                        {/* Swatch */}
+                        {/* Thumbnail */}
                         <div
-                          className="w-14 shrink-0 rounded-sm aspect-[3/4]"
+                          className="relative w-14 shrink-0 rounded-sm aspect-[3/4] overflow-hidden"
                           style={{ backgroundColor: item.bg }}
-                        />
+                        >
+                          {item.image && (
+                            <Image
+                              src={item.image}
+                              alt={item.name}
+                              fill
+                              sizes="56px"
+                              className="object-cover"
+                            />
+                          )}
+                        </div>
 
                         {/* Info */}
                         <div className="flex-1 min-w-0">
@@ -107,6 +118,7 @@ export function WishlistDrawer() {
                                 price: item.price,
                                 priceNum: item.priceNum,
                                 bg: item.bg,
+                                image: item.image,
                               })
                               openCart()
                               closeWishlist()

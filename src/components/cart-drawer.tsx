@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from 'framer-motion'
 import { X, Minus, Plus, Trash2, ShoppingBag } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { useCart } from '@/context/cart-context'
 
@@ -82,11 +83,21 @@ export function CartDrawer() {
                       key={`${item.id}-${item.size ?? ''}`}
                       className="flex gap-4 pb-5 border-b border-brand-border last:border-0 last:pb-0"
                     >
-                      {/* Color swatch thumbnail */}
+                      {/* Product thumbnail */}
                       <div
-                        className="w-20 h-24 rounded-sm flex-shrink-0"
+                        className="relative w-20 h-24 rounded-sm flex-shrink-0 overflow-hidden"
                         style={{ backgroundColor: item.bg }}
-                      />
+                      >
+                        {item.image && (
+                          <Image
+                            src={item.image}
+                            alt={item.name}
+                            fill
+                            sizes="80px"
+                            className="object-cover"
+                          />
+                        )}
+                      </div>
 
                       <div className="flex-1 min-w-0">
                         <p className="font-heading text-lg text-brand-deep leading-tight mb-0.5 truncate">
@@ -145,6 +156,9 @@ export function CartDrawer() {
                     {formatPrice(totalPrice)}
                   </span>
                 </div>
+                <p className="text-[10px] font-sans text-brand-muted/60 text-right leading-tight -mt-2">
+                  Precio final · ITBIS no aplica (RST)
+                </p>
 
                 {/* Checkout */}
                 <Link

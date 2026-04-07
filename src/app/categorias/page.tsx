@@ -5,9 +5,44 @@ import { Footer } from '@/components/footer'
 import { Categories, type CategoriaItem } from '@/components/categories'
 
 export const metadata: Metadata = {
-  title: 'Categorías | Prêt à Porter',
+  title: 'Categorías de Ropa Femenina | Prêt à Porter',
   description:
-    'Explora todas las categorías de Prêt à Porter: vestidos, sets, blusas, pantalones y más.',
+    'Explora todas las categorías de ropa femenina en Prêt à Porter: vestidos elegantes, sets, blusas, pantalones y más. Boutique en Santo Domingo, República Dominicana.',
+  keywords: [
+    'categorías ropa femenina Santo Domingo',
+    'vestidos mujer RD',
+    'blusas elegantes República Dominicana',
+    'sets ropa femenina',
+    'pantalones mujer Santo Domingo',
+    'boutique categorías ropa',
+  ],
+  alternates: {
+    canonical: 'https://pret-a-porter-eta.vercel.app/categorias',
+  },
+  openGraph: {
+    title: 'Categorías de Ropa Femenina | Prêt à Porter',
+    description:
+      'Explora vestidos, sets, blusas, pantalones y más en nuestra boutique de Santo Domingo.',
+    url: 'https://pret-a-porter-eta.vercel.app/categorias',
+    type: 'website',
+    locale: 'es_DO',
+    siteName: 'Prêt à Porter',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Categorías de ropa femenina — Prêt à Porter',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Categorías de Ropa Femenina | Prêt à Porter',
+    description:
+      'Vestidos, sets, blusas, pantalones y más en nuestra boutique de Santo Domingo.',
+    images: ['/og-image.jpg'],
+  },
 }
 
 // Revalidar cada 60 segundos para reflejar cambios del admin
@@ -21,7 +56,7 @@ async function getCategorias(): Promise<CategoriaItem[]> {
     )
     const { data, error } = await supabase
       .from('categorias')
-      .select('id, nombre, slug, bg, orden')
+      .select('id, nombre, slug, bg, orden, foto_url')
       .order('orden', { ascending: true })
 
     if (error) throw error

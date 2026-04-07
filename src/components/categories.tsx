@@ -1,15 +1,17 @@
 'use client'
 
+import Image       from 'next/image'
 import { motion, useInView } from 'framer-motion'
-import { useRef } from 'react'
-import Link from 'next/link'
+import { useRef }  from 'react'
+import Link        from 'next/link'
 
 export interface CategoriaItem {
-  id:     string
-  nombre: string
-  slug:   string
-  bg:     string
-  orden:  number
+  id:        string
+  nombre:    string
+  slug:      string
+  bg:        string
+  orden:     number
+  foto_url?: string | null
 }
 
 interface CategoriesProps {
@@ -61,23 +63,37 @@ export function Categories({ categories }: CategoriesProps) {
                 className={isLastOdd ? 'col-span-2 lg:col-span-1' : ''}
               >
                 <Link href={`/categorias/${cat.slug}`} className="group block">
-                  {/* Imagen placeholder con color de fondo */}
+                  {/* Contenedor de imagen */}
                   <div
                     className="relative overflow-hidden rounded-sm aspect-[3/4] mb-3"
                     style={{ backgroundColor: cat.bg }}
                   >
+                    {/* Imagen real si existe */}
+                    {cat.foto_url && (
+                      <Image
+                        src={cat.foto_url}
+                        alt={`${cat.nombre} — ropa femenina Prêt à Porter Santo Domingo`}
+                        fill
+                        sizes="(max-width: 768px) 50vw, 20vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-105"
+                      />
+                    )}
+
                     {/* Overlay gradiente */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-60" />
                     {/* Hover overlay */}
                     <div className="absolute inset-0 bg-brand-deep/0 group-hover:bg-brand-deep/15 transition-colors duration-500" />
-                    {/* Scale on hover */}
-                    <div className="absolute inset-0 scale-100 group-hover:scale-105 transition-transform duration-700 ease-out">
-                      <div className="w-full h-full flex items-center justify-center">
-                        <span className="text-[10px] text-brand-ivory/30 tracking-widest uppercase rotate-90 select-none">
-                          {cat.nombre} · 600×800
-                        </span>
+
+                    {/* Placeholder si no hay foto */}
+                    {!cat.foto_url && (
+                      <div className="absolute inset-0 scale-100 group-hover:scale-105 transition-transform duration-700 ease-out">
+                        <div className="w-full h-full flex items-center justify-center">
+                          <span className="text-[10px] text-brand-ivory/30 tracking-widest uppercase rotate-90 select-none">
+                            {cat.nombre} · 600×800
+                          </span>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                   <p className="font-heading text-xl text-brand-deep group-hover:text-brand-primary transition-colors duration-300">
                     {cat.nombre}

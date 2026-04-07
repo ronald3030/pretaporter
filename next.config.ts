@@ -8,6 +8,8 @@ const nextConfig: NextConfig = {
       // Instagram / Facebook CDN — used by Instagram Graph API media URLs
       { protocol: 'https', hostname: '**.cdninstagram.com' },
       { protocol: 'https', hostname: '**.fbcdn.net' },
+      // Supabase Storage (both URL formats from the SDK)
+      { protocol: 'https', hostname: '**.supabase.co' },
     ],
   },
 };

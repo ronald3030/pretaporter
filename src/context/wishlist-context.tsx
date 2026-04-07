@@ -16,6 +16,7 @@ export interface WishlistItem {
   price: string
   priceNum: number
   bg: string
+  image?: string
 }
 
 interface WishlistState {

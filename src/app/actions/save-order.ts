@@ -37,13 +37,19 @@ const OrderSchema = z.object({
   items: z.array(CartItemSchema).min(1).max(50),
   totalDop: z.number().positive(),
   totalUsd: z.number().positive(),
+  // Descuento (opcional)
+  codigoDescuento:          z.string().max(30).trim().optional(),
+  descuentoPorcentaje:      z.number().min(0).max(100).optional(),
+  descuentoMontoDop:        z.number().min(0).optional(),
+  // Cumpleaños del cliente (opcional — para campañas)
+  clienteFechaNacimiento:   z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
 })
 
 export type SaveOrderInput = z.infer<typeof OrderSchema>
 
 /* ─── Result type ─────────────────────────────────────────────────────────── */
 export type SaveOrderResult =
-  | { success: true; orderId: string }
+  | { success: true; orderId: string; eNCF?: string }
   | { success: false; error: string }
 
 /* ─── PayPal helpers ──────────────────────────────────────────────────────── */
@@ -132,6 +138,35 @@ export async function saveOrder(input: SaveOrderInput): Promise<SaveOrderResult>
     process.env.SUPABASE_SERVICE_ROLE_KEY ?? '',
   )
 
+  // 3a. Si viene código de descuento, re-validar server-side antes de insertar
+  //     para evitar race conditions (dos usuarios usando el mismo código a la vez).
+  const codigoNorm = data.codigoDescuento?.toUpperCase() ?? null
+
+  if (codigoNorm) {
+    const today = new Date().toISOString().split('T')[0]
+    const { data: codigoRow, error: cErr } = await supabase
+      .from('codigos_descuento')
+      .select('id, porcentaje, monto_minimo, activo, usado, fecha_fin')
+      .eq('codigo', codigoNorm)
+      .maybeSingle()
+
+    if (cErr || !codigoRow || !codigoRow.activo || codigoRow.usado ||
+        (codigoRow.fecha_fin && codigoRow.fecha_fin < today)) {
+      return { success: false, error: 'El código de descuento ya no es válido o ya fue utilizado.' }
+    }
+
+    // Verificar que el descuento enviado coincide con lo que está en BD (anti-tampering)
+    const expectedPct   = Number(codigoRow.porcentaje)
+    const cartSubtotal  = data.items.reduce((s, i) => s + i.priceNum * i.quantity, 0)
+    const expectedDiscount = Math.round(cartSubtotal * expectedPct / 100)
+    const sentDiscount     = Math.round(data.descuentoMontoDop ?? 0)
+
+    // Tolerancia de ±2 DOP por redondeo
+    if (Math.abs(expectedDiscount - sentDiscount) > 2) {
+      return { success: false, error: 'El monto de descuento no coincide. Recarga la página e intenta de nuevo.' }
+    }
+  }
+
   const { data: inserted, error } = await supabase
     .from('orders')
     .insert({
@@ -152,6 +187,12 @@ export async function saveOrder(input: SaveOrderInput): Promise<SaveOrderResult>
       total_usd: Number.parseFloat(totalUsdStr),
       paypal_order_id: data.paypalOrderId,
       status: 'paid',
+      // Descuento aplicado
+      codigo_descuento:           codigoNorm,
+      descuento_porcentaje:       data.descuentoPorcentaje        ?? null,
+      descuento_monto_dop:        data.descuentoMontoDop          ?? null,
+      // Cumpleaños del cliente
+      cliente_fecha_nacimiento:   data.clienteFechaNacimiento     ?? null,
     })
     .select('id')
     .single()
@@ -180,5 +221,75 @@ export async function saveOrder(input: SaveOrderInput): Promise<SaveOrderResult>
     }
   }
 
-  return { success: true, orderId: inserted.id as string }
+  // 5. Marcar código de descuento como usado (atómico — verifica de nuevo)
+  if (codigoNorm) {
+    const { error: markErr } = await supabase.rpc('fn_usar_codigo_descuento', {
+      p_codigo:         codigoNorm,
+      p_orden_id:       inserted.id,
+      p_cliente_nombre: data.customerName,
+      p_cliente_email:  data.customerEmail,
+    })
+    if (markErr) {
+      // La orden ya fue guardada — solo loggeamos, no fallamos al cliente
+      console.error('[saveOrder] Error al marcar código como usado:', markErr.message)
+    }
+  }
+
+  // 6. Emitir e-CF (Comprobante Fiscal Electrónico) de forma asíncrona.
+  //    Fire-and-forget: si falla, la orden queda guardada y el admin puede
+  //    reintentar desde el panel. Nunca bloqueamos la respuesta al cliente.
+  const orderId = inserted.id as string
+  emitirEcf(supabase, orderId, data.items, data.totalDop).catch((err) => {
+    console.error('[saveOrder] Error al emitir e-CF:', err)
+  })
+
+  return { success: true, orderId }
+}
+
+/* ─── Emisión de e-CF ─────────────────────────────────────────────────────── */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function emitirEcf(
+  supabase     : any,
+  orderId      : string,
+  items        : SaveOrderInput['items'],
+  totalDop     : number,
+): Promise<void> {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
+
+  // Mapear los ítems al formato que espera la Edge Function
+  const ecfItems = items.map((i) => ({
+    nombre         : i.size ? `${i.name} · Talla ${i.size}` : i.name,
+    cantidad       : i.quantity,
+    precioUnitario : i.priceNum,
+  }))
+
+  // Llamar a la Edge Function `emitir-ecf` con service_role
+  const res = await fetch(
+    `${supabaseUrl}/functions/v1/emitir-ecf`,
+    {
+      method  : 'POST',
+      headers : {
+        'Content-Type'  : 'application/json',
+        Authorization   : `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY ?? ''}`,
+        apikey          : process.env.SUPABASE_SERVICE_ROLE_KEY ?? '',
+      },
+      body: JSON.stringify({
+        orderId,
+        items      : ecfItems,
+        metodoPago : 'PAYPAL',
+        tipoEcf    : '32',
+      }),
+    },
+  )
+
+  if (!res.ok) {
+    const text = await res.text()
+    throw new Error(`Edge Function error ${res.status}: ${text}`)
+  }
+
+  const result = (await res.json()) as {
+    eNCF?: string; trackId?: string; estado?: string; aceptado?: boolean
+  }
+
+  console.log(`[emitirEcf] Orden ${orderId} → e-NCF: ${result.eNCF} (${result.estado})`)
 }

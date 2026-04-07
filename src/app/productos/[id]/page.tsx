@@ -50,12 +50,46 @@ export async function generateMetadata(
 
   if (!data) return { title: 'Prêt à Porter' }
 
+  const title = `${data.nombre} | Prêt à Porter`
+  const description =
+    data.descripcion ??
+    `${data.nombre} — Boutique de ropa femenina Prêt à Porter, Santo Domingo. Envíos a toda República Dominicana y EE.UU.`
+
   return {
-    title:       `${data.nombre} | Prêt à Porter`,
-    description: data.descripcion ?? `${data.nombre} — Prêt à Porter`,
+    title,
+    description,
+    keywords: [
+      `${data.nombre} Santo Domingo`,
+      `${data.nombre} República Dominicana`,
+      'ropa femenina Santo Domingo',
+      'boutique ropa mujer RD',
+      'vestidos elegantes RD',
+      'Prêt à Porter',
+    ],
+    alternates: {
+      canonical: `https://pret-a-porter-eta.vercel.app/productos/${id}`,
+    },
     openGraph: {
-      title:       `${data.nombre} | Prêt à Porter`,
-      description: data.descripcion ?? `${data.nombre} — Prêt à Porter`,
+      title,
+      description,
+      url: `https://pret-a-porter-eta.vercel.app/productos/${id}`,
+      type: 'website',
+      locale: 'es_DO',
+      siteName: 'Prêt à Porter',
+      images: [
+        {
+          url: '/og-image.jpg',
+          width: 1200,
+          height: 630,
+          alt: `${data.nombre} — Prêt à Porter Santo Domingo`,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: ['/og-image.jpg'],
     },
   }
 }

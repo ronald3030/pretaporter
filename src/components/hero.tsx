@@ -25,7 +25,7 @@ export function Hero() {
         >
           <Image
             src="/logo.png"
-            alt="Prêt à Porter Fashion Apparel"
+            alt="Prêt à Porter — Boutique de ropa femenina elegante en Santo Domingo, República Dominicana"
             fill
             sizes="420px"
             className="object-contain drop-shadow-xl"
@@ -44,7 +44,7 @@ export function Hero() {
             transition={{ duration: 0.7 }}
             className="relative w-56 h-56 mx-auto mb-8 lg:hidden"
           >
-            <Image src="/logo.png" alt="Prêt à Porter" fill className="object-contain drop-shadow-lg" priority />
+            <Image src="/logo.png" alt="Prêt à Porter — Boutique de ropa femenina en Santo Domingo" fill className="object-contain drop-shadow-lg" priority />
           </motion.div>
 
           {/* Eyebrow */}
@@ -137,7 +137,7 @@ export function Hero() {
           transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
           className="w-px h-10 bg-gradient-to-b from-brand-primary to-transparent"
         />
-        <p className="text-[10px] tracking-[0.2em] uppercase text-brand-muted">Scrollear</p>
+        <p className="text-[10px] tracking-[0.2em] uppercase text-brand-muted">Descubrir</p>
       </motion.div>
     </section>
   )

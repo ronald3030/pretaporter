@@ -7,8 +7,44 @@ import { ProductCard, type ProductCardData } from '@/components/product-card'
 export const revalidate = 60
 
 export const metadata: Metadata = {
-  title: 'Nueva Colección | Prêt à Porter',
-  description: 'Explora la nueva colección de Prêt à Porter. Piezas elegantes y seleccionadas para la mujer moderna en Santo Domingo.',
+  title: 'Nueva Colección de Ropa Femenina | Prêt à Porter',
+  description:
+    'Descubre la nueva colección de Prêt à Porter. Vestidos, blusas y conjuntos elegantes para la mujer moderna en Santo Domingo. Envíos a toda República Dominicana y EE.UU.',
+  keywords: [
+    'nueva colección ropa femenina Santo Domingo',
+    'colección moda mujer RD',
+    'vestidos nueva temporada República Dominicana',
+    'ropa femenina nueva colección',
+    'boutique nueva temporada Santo Domingo',
+    'Prêt à Porter colección',
+  ],
+  alternates: {
+    canonical: 'https://pret-a-porter-eta.vercel.app/coleccion',
+  },
+  openGraph: {
+    title: 'Nueva Colección de Ropa Femenina | Prêt à Porter',
+    description:
+      'Vestidos, blusas y conjuntos elegantes de la nueva temporada. Boutique femenina en Santo Domingo.',
+    url: 'https://pret-a-porter-eta.vercel.app/coleccion',
+    type: 'website',
+    locale: 'es_DO',
+    siteName: 'Prêt à Porter',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Nueva Colección — Prêt à Porter Santo Domingo',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Nueva Colección de Ropa Femenina | Prêt à Porter',
+    description:
+      'Vestidos, blusas y conjuntos elegantes de la nueva temporada. Boutique femenina en Santo Domingo.',
+    images: ['/og-image.jpg'],
+  },
 }
 
 function serverClient() {
