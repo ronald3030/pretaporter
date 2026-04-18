@@ -15,14 +15,44 @@ const securityHeaders = [
     key: "Content-Security-Policy",
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://vercel.live https://maps.googleapis.com https://maps.gstatic.com",
-      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://maps.googleapis.com https://maps.gstatic.com",
-      "font-src 'self' data: https://fonts.gstatic.com https://maps.gstatic.com",
-      "img-src 'self' data: blob: https://*.supabase.co https://*.cdninstagram.com https://*.fbcdn.net https://www.google-analytics.com https://maps.googleapis.com https://maps.gstatic.com https://*.googleapis.com",
-      "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://www.google-analytics.com https://graph.instagram.com https://graph.facebook.com https://open.er-api.com https://vercel.live wss://ws-us3.pusher.com https://maps.googleapis.com",
+      // Scripts: PayPal SDK, Google Pay, Apple Pay, Google Maps, Analytics
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval'" +
+        " https://www.googletagmanager.com https://www.google-analytics.com https://vercel.live" +
+        " https://www.paypal.com https://www.paypalobjects.com https://*.paypal.com" +
+        " https://pay.google.com https://applepay.cdn-apple.com" +
+        " https://maps.googleapis.com https://maps.gstatic.com",
+      // Estilos
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://maps.googleapis.com https://www.paypalobjects.com",
+      // Fuentes
+      "font-src 'self' data: https://fonts.gstatic.com https://maps.gstatic.com https://www.paypalobjects.com",
+      // Imágenes: Supabase Storage, Instagram/FB CDN, PayPal, Google Maps
+      "img-src 'self' data: blob:" +
+        " https://*.supabase.co" +
+        " https://*.cdninstagram.com https://*.fbcdn.net https://www.instagram.com" +
+        " https://www.google-analytics.com" +
+        " https://maps.googleapis.com https://maps.gstatic.com https://*.googleapis.com" +
+        " https://www.paypalobjects.com https://*.paypal.com" +
+        " https://checkout.paypal.com",
+      // Conexiones fetch/XHR/WebSocket
+      "connect-src 'self'" +
+        " https://*.supabase.co wss://*.supabase.co" +
+        " https://www.google-analytics.com" +
+        " https://graph.instagram.com https://graph.facebook.com" +
+        " https://open.er-api.com" +
+        " https://vercel.live wss://ws-us3.pusher.com" +
+        " https://maps.googleapis.com" +
+        " https://*.paypal.com https://api-m.paypal.com https://api-m.sandbox.paypal.com" +
+        " https://pay.google.com",
+      // Iframes: PayPal checkout, Google Pay, Apple Pay, Instagram embeds, Maps
+      "frame-src" +
+        " https://*.paypal.com https://www.sandbox.paypal.com https://checkout.paypal.com" +
+        " https://pay.google.com" +
+        " https://applepay.cdn-apple.com" +
+        " https://www.instagram.com https://www.facebook.com" +
+        " https://maps.google.com https://www.google.com",
       "frame-ancestors 'self'",
       "base-uri 'self'",
-      "form-action 'self'",
+      "form-action 'self' https://*.paypal.com https://www.sandbox.paypal.com",
       "object-src 'none'",
       "upgrade-insecure-requests",
     ].join("; "),
