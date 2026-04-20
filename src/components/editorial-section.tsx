@@ -29,7 +29,7 @@ export function EditorialSection() {
               src="/editorial-pool.jpg"
               alt="Prêt à Porter — Piezas para cada ocasión"
               fill
-              className="object-cover object-[center_20%]"
+              className="object-cover object-center"
               sizes="(max-width: 1024px) 100vw, 50vw"
               priority
               onError={() => setImgError(true)}

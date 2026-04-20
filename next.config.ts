@@ -24,7 +24,7 @@ const securityHeaders = [
       // Estilos
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://maps.googleapis.com https://www.paypalobjects.com",
       // Fuentes
-      "font-src 'self' data: https://fonts.gstatic.com https://maps.gstatic.com https://www.paypalobjects.com",
+      "font-src 'self' data: https://fonts.gstatic.com https://maps.gstatic.com https://www.paypalobjects.com https://applepay.cdn-apple.com",
       // Imágenes: Supabase Storage, Instagram/FB CDN, PayPal, Google Maps
       "img-src 'self' data: blob:" +
         " https://*.supabase.co" +
@@ -40,9 +40,9 @@ const securityHeaders = [
         " https://graph.instagram.com https://graph.facebook.com" +
         " https://open.er-api.com" +
         " https://vercel.live wss://ws-us3.pusher.com" +
-        " https://maps.googleapis.com" +
+        " https://maps.googleapis.com https://places.googleapis.com" +
         " https://*.paypal.com https://api-m.paypal.com https://api-m.sandbox.paypal.com" +
-        " https://pay.google.com",
+        " https://pay.google.com https://google.com",
       // Iframes: PayPal checkout, Google Pay, Apple Pay, Instagram embeds, Maps
       "frame-src" +
         " https://*.paypal.com https://www.sandbox.paypal.com https://checkout.paypal.com" +

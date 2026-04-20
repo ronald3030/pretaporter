@@ -25,9 +25,7 @@ import {
   GoogleMap,
   useJsApiLoader,
 } from '@react-google-maps/api'
-import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js'
-import { GooglePayButton } from '@/components/google-pay-button'
-import { ApplePayButton } from '@/components/apple-pay-button'
+import { PayPalScriptProvider, PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js'
 import Image from 'next/image'
 import { useCart } from '@/context/cart-context'
 import { saveOrder } from '@/app/actions/save-order'
@@ -78,6 +76,48 @@ const SHIPPING_ZONES = [
   { id: 'sd_este',           label: 'SD Este',           costDop: 500 },
   { id: 'sd_norte',          label: 'SD Norte',          costDop: 500 },
 ]
+
+/* ─── PaymentButtons — sub-componente dentro de PayPalScriptProvider ─────── */
+interface PaymentButtonsProps {
+  totalUSD: string
+  itemNames: string
+  onSave: (orderId: string) => Promise<void>
+  items: { name: string }[]
+}
+
+function PaymentButtons({ totalUSD, itemNames, onSave, items }: PaymentButtonsProps) {
+  const [{ isPending, isRejected }] = usePayPalScriptReducer()
+
+  return (
+    <div className="flex flex-col gap-2">
+      {/* PayPal — skeleton mientras carga el SDK */}
+      {isPending && (
+        <div className="w-full rounded-sm bg-brand-sand/60 animate-pulse" style={{ height: 136 }} />
+      )}
+      {isRejected && (
+        <p className="text-xs text-red-500 text-center font-sans">No se pudo cargar PayPal.</p>
+      )}
+      {!isPending && !isRejected && (
+        <PayPalButtons
+          style={{ layout: 'vertical', color: 'black', shape: 'rect', label: 'pay', height: 48 }}
+          createOrder={(_data, actions) =>
+            actions.order.create({
+              intent: 'CAPTURE',
+              purchase_units: [{
+                amount: { currency_code: 'USD', value: totalUSD },
+                description: `Prêt à Porter — ${items.map((i) => i.name).join(', ')}`,
+              }],
+            })
+          }
+          onApprove={async (data, actions) => {
+            await actions.order?.capture()
+            await onSave(data.orderID)
+          }}
+        />
+      )}
+    </div>
+  )
+}
 
 /* ─── Component ───────────────────────────────────────────────────────────── */
 export function CheckoutForm() {
@@ -269,7 +309,6 @@ export function CheckoutForm() {
     if (customerPhone.trim().length < 4) return 'Ingresa tu teléfono / WhatsApp.'
     if (!customerEmail.trim().includes('@')) return 'Ingresa un correo electrónico válido.'
     if (deliveryType === 'delivery' && shippingZone === null) return 'Selecciona un método de envío.'
-    if (deliveryType === 'delivery' && selectedPos === null) return 'Arrastra el mapa para ubicar la flecha en tu dirección.'
     return ''
   }
 
@@ -390,8 +429,7 @@ export function CheckoutForm() {
         currency: 'USD',
         intent: 'capture',
         'enable-funding': 'venmo',
-        ...(process.env.NEXT_PUBLIC_PAYPAL_ENV !== 'live' && { 'buyer-country': 'US' }),
-        components: 'buttons,googlepay,applepay',
+        components: 'buttons',
       }}
     >
       <div className="max-w-6xl mx-auto px-4 lg:px-8 py-10 w-full flex flex-col-reverse lg:flex-row lg:items-start gap-8">
@@ -578,7 +616,13 @@ export function CheckoutForm() {
                             mapContainerStyle={{ width: '100%', height: '260px' }}
                             center={STORE_CENTER}
                             zoom={14}
-                            onLoad={(map) => { mapRef.current = map }}
+                            onLoad={(map) => {
+                              mapRef.current = map
+                              // Inicializar selectedPos con el centro del mapa al cargar
+                              // para que canPay no bloquee PayPal antes del primer drag
+                              setSelectedPos(STORE_CENTER)
+                              setDistance(0)
+                            }}
                             onDragEnd={handleMapDragEnd}
                             options={{
                               zoomControl: true,
@@ -753,31 +797,6 @@ export function CheckoutForm() {
               </div>
             </section>
 
-            {/* ── Pago ── */}
-            <section className="bg-white rounded-sm border border-brand-border p-6">
-              {canPay && !saving && (
-                <>
-                  <PayPalButtons
-                    style={{ layout: 'vertical', color: 'black', shape: 'rect', label: 'pay', height: 48 }}
-                    createOrder={(_data, actions) =>
-                      actions.order.create({
-                        intent: 'CAPTURE',
-                        purchase_units: [{
-                          amount: { currency_code: 'USD', value: totalUSD },
-                          description: `Prêt à Porter — ${items.map((i) => i.name).join(', ')}`,
-                        }],
-                      })
-                    }
-                    onApprove={async (data, actions) => {
-                      await actions.order?.capture()
-                      await handleSaveOrder(data.orderID)
-                    }}
-                  />
-                  <GooglePayButton totalUSD={totalUSD} itemNames={items.map((i) => i.name).join(', ')} onSuccess={handleSaveOrder} />
-                  <ApplePayButton totalUSD={totalUSD} itemNames={items.map((i) => i.name).join(', ')} onSuccess={handleSaveOrder} />
-                </>
-              )}
-            </section>
           </div>
         </div>
 
@@ -905,6 +924,18 @@ export function CheckoutForm() {
             <p className="text-[9px] font-sans text-brand-muted/60 text-right leading-tight">
               Precio final · ITBIS no aplica (Régimen RST)
             </p>
+
+          {/* ── Botones de pago ── */}
+          {canPay && !saving && (
+            <div className="mt-5">
+              <PaymentButtons
+                totalUSD={totalUSD}
+                itemNames={items.map((i) => i.name).join(', ')}
+                onSave={handleSaveOrder}
+                items={items}
+              />
+            </div>
+          )}
           </div>
 
           {/* Estado del pago */}
